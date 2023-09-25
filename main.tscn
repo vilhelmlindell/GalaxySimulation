@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://ddk834h0jdla3"]
+
+[ext_resource type="Script" path="res://Galaxy.cs" id="1_paltp"]
+[ext_resource type="Script" path="res://Camera.cs" id="2_873di"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_715ug"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_mmoxb"]
+material = SubResource("StandardMaterial3D_715ug")
+
+[sub_resource type="MultiMesh" id="MultiMesh_hvhb6"]
+transform_format = 1
+use_colors = true
+mesh = SubResource("SphereMesh_mmoxb")
+
+[node name="Main" type="Node3D"]
+
+[node name="Galaxy" type="Node3D" parent="."]
+script = ExtResource("1_paltp")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="Galaxy"]
+multimesh = SubResource("MultiMesh_hvhb6")
+
+[node name="Camera" type="Camera3D" parent="."]
+near = 0.245
+script = ExtResource("2_873di")

@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://ck4v4psccmx5b"
+path="res://.godot/imported/galaxy_simulation.glsl-ce763a1a1cc5e25254912a9d87d6e764.res"
+
+[deps]
+
+source_file="res://galaxy_simulation.glsl"
+dest_files=["res://.godot/imported/galaxy_simulation.glsl-ce763a1a1cc5e25254912a9d87d6e764.res"]
+
+[params]
+
