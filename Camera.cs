@@ -1,48 +1,59 @@
 using Godot;
-using System;
+
+namespace GalaxySimulation;
 
 public partial class Camera : Camera3D
 {
-    [Export]
-    private float _distanceToOrigin = 40f;
-
-    private float _sensitivity = 0.01f;
+    private const float Offset = 0.01f;
+    
+    [Export] private float _distanceToPivot = 40f;
+    [Export] private float _lookSensitivity = 1f;
+    [Export] private float _zoomSensitivity = 1f;
 
     private Vector3 _pivotPoint = Vector3.Zero;
 
-    private Vector3 _rotation;
+    private Vector2 _rotation = new Vector2(0, -Mathf.Pi / 2 + Offset);
 
     private Vector2 _previousMousePosition;
 
-    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        GlobalPosition = new Vector3(0, 0, _distanceToOrigin);
         _previousMousePosition = GetViewport().GetMousePosition();
+        
+        UpdateCameraPosition();
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
         var mouseMovement = GetMouseDelta();
 
-        if (Input.IsMouseButtonPressed(MouseButton.Right))
-        {
-            _rotation.X -= mouseMovement.X * _sensitivity;
-            _rotation.Y -= mouseMovement.Y * _sensitivity;
+        if (!Input.IsMouseButtonPressed(MouseButton.Right)) return;
+        
+        _rotation -= mouseMovement * _lookSensitivity * 0.001f;
 
-            LookAt(_pivotPoint);
-        }
+        _rotation.Y = Mathf.Clamp(_rotation.Y, -Mathf.Pi / 2 + Offset, Mathf.Pi / 2 - Offset);
+
+        UpdateCameraPosition();
+    }
+
+    private void UpdateCameraPosition()
+    {
+        var pivotRadius = new Vector3(0, 0, _distanceToPivot);
+
+        pivotRadius = pivotRadius.Rotated(Vector3.Right, _rotation.Y).Rotated(Vector3.Up, _rotation.X);
+
+        GlobalPosition = pivotRadius;
+
+        LookAt(_pivotPoint);
     }
 
     private Vector2 GetMouseDelta()
     {
-        Vector2 mousePosition = GetViewport().GetMousePosition();
-        Vector2 screenRectSize = GetViewport().GetVisibleRect().Size;
+        var mousePosition = GetViewport().GetMousePosition();
 
-        Vector2 mouseDelta = mousePosition - _previousMousePosition;
+        var mouseDelta = mousePosition - _previousMousePosition;
 
-        _previousMousePosition = GetViewport().GetMousePosition();
+        _previousMousePosition = mousePosition;
 
         return mouseDelta;
     }

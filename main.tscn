@@ -3,25 +3,35 @@
 [ext_resource type="Script" path="res://Galaxy.cs" id="1_paltp"]
 [ext_resource type="Script" path="res://Camera.cs" id="2_873di"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_715ug"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_orros"]
 vertex_color_use_as_albedo = true
+emission_enabled = true
+emission = Color(0, 0, 1, 1)
 
-[sub_resource type="SphereMesh" id="SphereMesh_mmoxb"]
-material = SubResource("StandardMaterial3D_715ug")
+[sub_resource type="SphereMesh" id="SphereMesh_6jol0"]
+material = SubResource("StandardMaterial3D_orros")
+radial_segments = 32
+rings = 16
 
 [sub_resource type="MultiMesh" id="MultiMesh_hvhb6"]
 transform_format = 1
 use_colors = true
-mesh = SubResource("SphereMesh_mmoxb")
+mesh = SubResource("SphereMesh_6jol0")
 
 [node name="Main" type="Node3D"]
 
 [node name="Galaxy" type="Node3D" parent="."]
 script = ExtResource("1_paltp")
+_starCount = 10
+_initialVelocity = 0.59
+_timeStep = 0.106
 
 [node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="Galaxy"]
 multimesh = SubResource("MultiMesh_hvhb6")
 
-[node name="Camera" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 near = 0.245
 script = ExtResource("2_873di")
+_distanceToPivot = 150.0
+_zoomSensitivity = 10.0

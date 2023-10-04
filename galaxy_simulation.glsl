@@ -2,20 +2,43 @@
 #version 450
 
 // Invocations in the (x, y, z) dimension
-layout(local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 512, local_size_y = 1, local_size_z = 1) in;
 
 struct Star {
-    vec3 position;
-    vec3 velocity;
-    vec3 acceleration;
+    vec4 position;
+    vec4 velocity;
 };
 
-layout(set = 0, binding = 0, std430) buffer InputBuffer {
-    Star stars[100];
-} input_buffer;
+layout(set = 0, binding = 0) uniform UniformBuffer {
+    float timeStep;
+    float smoothingLength;
+};
 
-// The code we want to execute in each invocation
+layout(set = 0, binding = 1, std430) buffer InputBuffer {
+    Star stars[];
+};
+
+const float gravitationalConstant = 6.67430e-11; // Gravitational constant
+
 void main() {
-    // gl_GlobalInvocationID.x uniquely identifies this invocation across all work groups
-    input_buffer.stars[gl_GlobalInvocationID.x].position.y += 0.1f;
+    uint starIndex = gl_GlobalInvocationID.x;
+
+    Star star = stars[starIndex];
+    float starMass = 1.0;
+
+    vec4 acceleration = vec4(0);
+
+    for (uint i = 0; i < stars.length(); ++i) {
+        if (i != starIndex) {
+            Star otherStar = stars[i];
+            float distance = distance(star.position, otherStar.position);
+            acceleration -= normalize(star.position - otherStar.position) / (distance + smoothingLength);
+        }
+    }
+
+    star.velocity += acceleration * timeStep;
+    star.position += star.velocity * timeStep;
+
+    // Store the updated star back into the buffer
+    stars[starIndex] = star;
 }
